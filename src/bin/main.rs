@@ -9,7 +9,7 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     let pool = ThreadPool::new(8);
 
-    for stream in listener.incoming() {
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
 
         println!("Incoming request from {}", stream.peer_addr().unwrap());
@@ -28,7 +28,7 @@ fn handle_connection(mut stream: TcpStream) {
 
     let (status, html_filename) = if buffer.starts_with(handled_get) {
         // Simulate some latency
-        thread::sleep(time::Duration::from_secs(2));
+        thread::sleep(time::Duration::from_secs(4));
 
         ("HTTP/1.1 200 OK\r\n\r\n", "hello.html")
     } else {
